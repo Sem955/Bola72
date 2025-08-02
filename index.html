@@ -35,7 +35,6 @@
       color: #FFD700;
     }
 
-    /* MENU SLIDE */
     .side-menu {
       position: absolute;
       top: 60px;
@@ -76,26 +75,17 @@
       margin: 0 0 10px 0;
     }
 
-    .banner {
-      width: 100%;
+    .banner, .headline {
       border-radius: 8px;
       overflow: hidden;
       margin-bottom: 15px;
+      position: relative;
     }
 
-    .banner img {
+    .banner img, .headline img {
       width: 100%;
       display: block;
-    }
-
-    .headline {
-      position: relative;
-      margin-bottom: 20px;
-    }
-
-    .headline img {
-      width: 100%;
-      border-radius: 8px;
+      height: auto;
     }
 
     .headline-title {
@@ -132,11 +122,11 @@
     </div>
 
     <div class="banner">
-      <img src="https://via.placeholder.com/800x200?text=BANNER+AFF+U-23" alt="Banner AFF U-23">
+      <img src="https://i.ibb.co/4KjzCmG/banner-aff.jpg" alt="Banner AFF U-23">
     </div>
 
     <div class="headline">
-      <img src="https://via.placeholder.com/800x400?text=Pemain+Baru+Real+Madrid" alt="Headline">
+      <img src="https://i.ibb.co/y5Chpyx/real-madrid.jpg" alt="Headline">
       <div class="headline-title">5 Transfer Termahal La Liga Musim Ini</div>
     </div>
   </div>
@@ -144,11 +134,7 @@
   <script>
     function toggleMenu() {
       var menu = document.getElementById("menu");
-      if (menu.style.display === "flex") {
-        menu.style.display = "none";
-      } else {
-        menu.style.display = "flex";
-      }
+      menu.style.display = menu.style.display === "flex" ? "none" : "flex";
     }
   </script>
 </body>
