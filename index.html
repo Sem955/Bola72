@@ -10,6 +10,7 @@
       font-family: sans-serif;
       background-color: #f5f5f5;
     }
+
     header {
       background-color: #006400;
       color: white;
@@ -17,21 +18,52 @@
       align-items: center;
       justify-content: space-between;
       padding: 10px 15px;
+      position: relative;
     }
+
     .menu-icon {
       font-size: 24px;
       cursor: pointer;
     }
+
     .logo {
       font-weight: bold;
       font-size: 24px;
     }
+
     .logo span {
       color: #FFD700;
     }
+
+    /* MENU SLIDE */
+    .side-menu {
+      position: absolute;
+      top: 60px;
+      left: 0;
+      width: 100%;
+      background-color: white;
+      border-top: 1px solid #ccc;
+      display: none;
+      flex-direction: column;
+      z-index: 999;
+    }
+
+    .side-menu a {
+      padding: 15px;
+      text-decoration: none;
+      color: #333;
+      border-bottom: 1px solid #eee;
+      font-weight: bold;
+    }
+
+    .side-menu a:hover {
+      background-color: #f2f2f2;
+    }
+
     .container {
       padding: 15px;
     }
+
     .score-box {
       background: white;
       border-radius: 8px;
@@ -39,27 +71,33 @@
       margin-bottom: 15px;
       box-shadow: 0 0 5px rgba(0,0,0,0.1);
     }
+
     .score-box h3 {
       margin: 0 0 10px 0;
     }
+
     .banner {
       width: 100%;
       border-radius: 8px;
       overflow: hidden;
       margin-bottom: 15px;
     }
+
     .banner img {
       width: 100%;
       display: block;
     }
+
     .headline {
       position: relative;
       margin-bottom: 20px;
     }
+
     .headline img {
       width: 100%;
       border-radius: 8px;
     }
+
     .headline-title {
       position: absolute;
       bottom: 10px;
@@ -75,13 +113,19 @@
 <body>
 
   <header>
-    <div class="menu-icon">&#9776;</div>
+    <div class="menu-icon" onclick="toggleMenu()">&#9776;</div>
     <div class="logo">BOLA<span>.NET</span></div>
-    <div style="width:24px;"></div> <!-- spacer -->
+    <div style="width:24px;"></div>
   </header>
 
-  <div class="container">
+  <!-- Menu dropdown -->
+  <nav class="side-menu" id="menu">
+    <a href="#">Timnas Indonesia</a>
+    <a href="#">Liga Inggris</a>
+    <a href="#">Liga Europa</a>
+  </nav>
 
+  <div class="container">
     <div class="score-box">
       <h3>PIALA DUNIA - 14 Jul 2025</h3>
       <p><strong>Chelsea</strong> 3 - 0 <strong>PSG</strong></p>
@@ -95,8 +139,17 @@
       <img src="https://via.placeholder.com/800x400?text=Pemain+Baru+Real+Madrid" alt="Headline">
       <div class="headline-title">5 Transfer Termahal La Liga Musim Ini</div>
     </div>
-
   </div>
 
+  <script>
+    function toggleMenu() {
+      var menu = document.getElementById("menu");
+      if (menu.style.display === "flex") {
+        menu.style.display = "none";
+      } else {
+        menu.style.display = "flex";
+      }
+    }
+  </script>
 </body>
 </html>
