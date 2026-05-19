@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOV Miner - Login & Daftar</title>
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAlXIQ42acjO8xZH-Ti__YL6h9SGQQKQto",
+            authDomain: "govminer.firebaseapp.com",
+            projectId: "govminer",
+            storageBucket: "govminer.firebasestorage.app",
+            messagingSenderId: "408110658500",
+            appId: "1:408110658500:web:3fe7f4bd9a35f3fe726a91"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        window.firebaseAuth = auth;
+        window.firebaseDb = db;
+        window.firebaseCreateUser = createUserWithEmailAndPassword;
+        window.firebaseSignIn = signInWithEmailAndPassword;
+        window.firebaseDoc = doc;
+        window.firebaseSetDoc = setDoc;
+        window.firebaseGetDoc = getDoc;
+        window.firebaseUpdateDoc = updateDoc;
+        window.firebaseArrayUnion = arrayUnion;
+        window.firebaseIncrement = increment;
+    </script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo img {
+            width: 100px;
+            height: auto;
+        }
+        
+        .logo h1 {
+            font-size: 24px;
+            color: #333;
+            margin-top: 10px;
+        }
+        
+        .logo p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .toggle-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .toggle-link a {
+            color: #667eea;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .success-message {
+            background: #efe;
+            color: #3c3;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="logo">
+                <img src="https://i.postimg.cc/x8XVRwZS/file-00000000f3d06230a63b9cde063aaecc-1.png" alt="Logo">
+                <h1>GOV Miner</h1>
+                <p>Earn GOV tokens by mining</p>
+            </div>
+            
+            <!-- Login Form -->
+            <div id="loginForm">
+                <div id="loginError" class="error-message"></div>
+                <div class="form-group">
+                    <input type="email" id="loginEmail" placeholder="Email address">
+                </div>
+                <div class="form-group">
+                    <input type="password" id="loginPassword" placeholder="Password">
+                </div>
+                <button class="btn" id="loginBtn">Login</button>
+                <div class="toggle-link">
+                    <a id="showRegisterBtn">Don't have an account? Register</a>
+                </div>
+            </div>
+            
+            <!-- Register Form -->
+            <div id="registerForm" class="hidden">
+                <div id="registerError" class="error-message"></div>
+                <div id="registerSuccess" class="success-message"></div>
+                <div class="form-group">
+                    <input type="text" id="registerName" placeholder="Full name">
+                </div>
+                <div class="form-group">
+                    <input type="email" id="registerEmail" placeholder="Email address">
+                </div>
+                <div class="form-group">
+                    <input type="password" id="registerPassword" placeholder="Password (min 6 characters)">
+                </div>
+                <div class="form-group">
+                    <input type="password" id="registerConfirmPassword" placeholder="Confirm password">
+                </div>
+                <button class="btn" id="registerBtn">Register</button>
+                <div class="toggle-link">
+                    <a id="showLoginBtn">Already have an account? Login</a>
+                </div>
+            </div>
+            
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p style="margin-top: 10px;">Processing...</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Get URL parameters for referral
+        const urlParams = new URLSearchParams(window.location.search);
+        const referrerId = urlParams.get('ref');
+        if (referrerId) {
+            localStorage.setItem('referrerId', referrerId);
+        }
+        
+        // DOM elements
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const showRegisterBtn = document.getElementById('showRegisterBtn');
+        const showLoginBtn = document.getElementById('showLoginBtn');
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const loadingDiv = document.getElementById('loading');
+        
+        // Toggle forms
+        showRegisterBtn.onclick = () => {
+            loginForm.classList.add('hidden');
+            registerForm.classList.remove('hidden');
+        };
+        
+        showLoginBtn.onclick = () => {
+            registerForm.classList.add('hidden');
+            loginForm.classList.remove('hidden');
+        };
+        
+        // Show/hide loading
+        function setLoading(show) {
+            loadingDiv.style.display = show ? 'block' : 'none';
+        }
+        
+        function showError(elementId, message) {
+            const errorDiv = document.getElementById(elementId);
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+        
+        function showSuccess(elementId, message) {
+            const successDiv = document.getElementById(elementId);
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 5000);
+        }
+        
+        // LOGIN
+        loginBtn.onclick = async () => {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                showError('loginError', 'Please fill all fields');
+                return;
+            }
+            
+            setLoading(true);
+            
+            try {
+                const userCredential = await window.firebaseSignIn(window.firebaseAuth, email, password);
+                const user = userCredential.user;
+                
+                // Store user info
+                localStorage.setItem('currentUser', JSON.stringify({
+                    uid: user.uid,
+                    email: user.email
+                }));
+                
+                // Redirect to dashboard
+                window.location.href = 'dashboard.html';
+                
+            } catch (error) {
+                console.error(error);
+                let message = 'Login failed';
+                if (error.code === 'auth/user-not-found') message = 'User not found';
+                else if (error.code === 'auth/wrong-password') message = 'Wrong password';
+                else if (error.code === 'auth/invalid-email') message = 'Invalid email';
+                showError('loginError', message);
+            } finally {
+                setLoading(false);
+            }
+        };
+        
+        // REGISTER
+        registerBtn.onclick = async () => {
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
+            
+            if (!name || !email || !password || !confirmPassword) {
+                showError('registerError', 'Please fill all fields');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showError('registerError', 'Passwords do not match');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showError('registerError', 'Password must be at least 6 characters');
+                return;
+            }
+            
+            setLoading(true);
+            
+            try {
+                // Create user
+                const userCredential = await window.firebaseCreateUser(window.firebaseAuth, email, password);
+                const user = userCredential.user;
+                
+                // Save user data to Firestore
+                await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, 'users', user.uid), {
+                    uid: user.uid,
+                    name: name,
+                    email: email,
+                    saldoGOV: 100,
+                    tapCount: 0,
+                    tapPoints: 0,
+                    tapMultiplier: 1,
+                    referralPoints: 0,
+                    referrals: [],
+                    lastClaimTime: null,
+                    createdAt: new Date().toISOString()
+                });
+                
+                // Process referral if exists
+                const referrerId = localStorage.getItem('referrerId');
+                if (referrerId && referrerId !== user.uid) {
+                    try {
+                        const referrerRef = window.firebaseDoc(window.firebaseDb, 'users', referrerId);
+                        const referrerDoc = await window.firebaseGetDoc(referrerRef);
+                        
+                        if (referrerDoc.exists()) {
+                            await window.firebaseUpdateDoc(referrerRef, {
+                                referrals: window.firebaseArrayUnion(email.split('@')[0]),
+                                referralPoints: window.firebaseIncrement(1000),
+                                saldoGOV: window.firebaseIncrement(1000)
+                            });
+                        }
+                    } catch (refError) {
+                        console.error('Referral error:', refError);
+                    }
+                }
+                
+                // Store user info
+                localStorage.setItem('currentUser', JSON.stringify({
+                    uid: user.uid,
+                    email: user.email
+                }));
+                
+                showSuccess('registerSuccess', 'Registration successful! Redirecting...');
+                
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 2000);
+                
+            } catch (error) {
+                console.error(error);
+                let message = 'Registration failed';
+                if (error.code === 'auth/email-already-in-use') message = 'Email already registered';
+                else if (error.code === 'auth/invalid-email') message = 'Invalid email';
+                else if (error.code === 'auth/weak-password') message = 'Password too weak';
+                showError('registerError', message);
+            } finally {
+                setLoading(false);
+            }
+        };
+    </script>
+</body>
+</html>
